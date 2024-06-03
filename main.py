@@ -3,12 +3,12 @@ import streamlit as st
 from googletrans import Translator
 from io import StringIO
 
-def translate_text(text, target_language='mr'):
+def translate_text(text, source_language='hi', target_language='mr'):
     translator = Translator()
-    translated = translator.translate(text, dest=target_language)
+    translated = translator.translate(text, src=source_language, dest=target_language)
     return translated.text
 
-def translate_srt_content(content, target_language='mr'):
+def translate_srt_content(content, source_language='hi', target_language='mr'):
     lines = content.split('\n')
     translated_lines = []
     subtitle_block = []
@@ -23,7 +23,7 @@ def translate_srt_content(content, target_language='mr'):
             if subtitle_block:
                 current_block += 1
                 index, timestamp, subtitle_text = subtitle_block
-                translated_text = translate_text(subtitle_text.strip(), target_language)
+                translated_text = translate_text(subtitle_text.strip(), source_language, target_language)
                 translated_lines.append(index)
                 translated_lines.append(timestamp)
                 translated_lines.append(translated_text + "\n\n")
@@ -31,14 +31,14 @@ def translate_srt_content(content, target_language='mr'):
 
                 # Update progress bar
                 progress_bar.progress(current_block / total_blocks)
-                # st.write(f"Translated {current_block}/{total_blocks} subtitle blocks")
+                st.write(f"Translated {current_block}/{total_blocks} subtitle blocks")
 
         else:
             if re.match(r'^\d+$', line.strip()):  # Index line
                 if subtitle_block:
                     current_block += 1
                     index, timestamp, subtitle_text = subtitle_block
-                    translated_text = translate_text(subtitle_text.strip(), target_language)
+                    translated_text = translate_text(subtitle_text.strip(), source_language, target_language)
                     translated_lines.append(index)
                     translated_lines.append(timestamp)
                     translated_lines.append(translated_text + "\n\n")
@@ -52,7 +52,7 @@ def translate_srt_content(content, target_language='mr'):
     if subtitle_block:
         current_block += 1
         index, timestamp, subtitle_text = subtitle_block
-        translated_text = translate_text(subtitle_text.strip(), target_language)
+        translated_text = translate_text(subtitle_text.strip(), source_language, target_language)
         translated_lines.append(index)
         translated_lines.append(timestamp)
         translated_lines.append(translated_text + "\n\n")
@@ -64,7 +64,7 @@ def translate_srt_content(content, target_language='mr'):
     return ''.join(translated_lines)
 
 st.title('SRT File Translator')
-st.write('Upload an SRT file to translate it to Marathi.')
+st.write('Upload an SRT file to translate it from Hindi to Marathi.')
 
 uploaded_file = st.file_uploader("Choose an SRT file...", type="srt")
 
